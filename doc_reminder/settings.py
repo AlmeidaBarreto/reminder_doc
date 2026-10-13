@@ -32,7 +32,11 @@ if not SECRET_KEY:
 
 DEBUG = os.getenv("DEBUG", "False").lower() == "true"
 
-ALLOWED_HOSTS = ["localhost", "127.0.0.1"]
+ALLOWED_HOSTS = [    
+    "localhost",
+    "127.0.0.1",
+    "reminder-doc.onrender.com",
+]
 
 
 
