@@ -1,0 +1,515 @@
+{% load static %}
+{% block content %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Register Document</title>
+
+    <!-- CSS -->
+    <link rel="stylesheet"
+          href="{% static 'css/document_register.css' %}">
+
+</head>
+
+
+<body>
+
+
+<div class="app-container">
+
+
+    <!-- =====================================================
+         MOBILE MENU BUTTON
+    ====================================================== -->
+
+    <button
+        type="button"
+        class="mobile-menu-btn"
+        onclick="toggleSidebar()"
+    >
+        ☰
+    </button>
+
+
+
+    <!-- =====================================================
+         SIDEBAR
+    ====================================================== -->
+
+    <aside class="sidebar" id="sidebar">
+
+
+        <!-- Logo -->
+
+        <div class="logo">
+
+            <h2>
+                📄 DocReminder
+            </h2>
+
+            <p>
+                Document Expiration System
+            </p>
+
+        </div>
+
+
+
+        <!-- Main Menu -->
+
+        <div class="menu-title">
+            Main Menu
+        </div>
+
+
+        <nav class="menu">
+
+
+            <a href="{% url 'reminders:document_list' %}">
+
+                <span class="menu-icon">
+                    📋
+                </span>
+
+                Documents
+
+            </a>
+
+
+            <a href="#">
+
+                <span class="menu-icon">
+                    ⏰
+                </span>
+
+                Expiring Soon
+
+            </a>
+
+
+            <a href="#">
+
+                <span class="menu-icon">
+                    ⚠️
+                </span>
+
+                Expired
+
+            </a>
+
+
+            <a href="#">
+
+                <span class="menu-icon">
+                    🔔
+                </span>
+
+                Notifications
+
+            </a>
+
+        </nav>
+
+
+
+        <!-- Management -->
+
+        <div class="menu-title">
+            Management
+        </div>
+
+
+        <nav class="menu">
+
+            <a href="#"
+               class="active">
+
+                <span class="menu-icon">
+                    ➕
+                </span>
+
+                Register Document
+
+            </a>
+
+        </nav>
+
+    </aside>
+
+
+
+    <!-- =====================================================
+         MAIN CONTENT
+    ====================================================== -->
+
+    <main class="main-content">
+
+
+        <!-- Page Header -->
+
+        <div class="page-header">
+
+
+            <div>
+
+                <h1>
+                    Register Document
+                </h1>
+
+                <p>
+                    Add a new document to the expiration reminder system.
+                </p>
+
+            </div>
+
+
+            <a
+                href="{% url 'reminders:document_list' %}"
+                class="btn btn-secondary"
+            >
+
+                ← Back to Documents
+
+            </a>
+
+        </div>
+
+
+
+        <!-- =================================================
+             MESSAGES
+        ================================================== -->
+
+        {% if messages %}
+
+            <div class="messages-container">
+
+                {% for message in messages %}
+
+                    <div
+                        class="alert
+                        {% if message.tags %}
+                            alert-{{ message.tags }}
+                        {% else %}
+                            alert-info
+                        {% endif %}"
+                    >
+
+                        <span class="alert-icon">
+
+                            {% if message.tags == 'success' %}
+                                ✓
+                            {% elif message.tags == 'error' %}
+                                !
+                            {% else %}
+                                ℹ
+                            {% endif %}
+
+                        </span>
+
+
+                        <span>
+                            {{ message }}
+                        </span>
+
+                    </div>
+
+                {% endfor %}
+
+            </div>
+
+        {% endif %}
+
+
+
+        <!-- =================================================
+             FORM CARD
+        ================================================== -->
+
+        <div class="form-card">
+
+
+            <!-- Card Header -->
+
+            <div class="form-card-header">
+
+                <div class="form-icon">
+                    📄
+                </div>
+
+
+                <div>
+
+                    <h2>
+                        Document Information
+                    </h2>
+
+                    <p>
+                        Enter the document details below.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+
+            <!-- Form -->
+
+            <form
+                method="post"
+                id="documentForm"
+                novalidate
+            >
+
+                {% csrf_token %}
+
+
+                <!-- =========================================
+                     DJANGO FORM ERRORS
+                ========================================== -->
+
+                {% if form.non_field_errors %}
+
+                    <div class="form-error-box">
+
+                        {% for error in form.non_field_errors %}
+
+                            <div>
+                                {{ error }}
+                            </div>
+
+                        {% endfor %}
+
+                    </div>
+
+                {% endif %}
+
+
+
+                <!-- =========================================
+                     FORM FIELDS
+                ========================================== -->
+
+                <div class="form-grid">
+
+
+                    {% for field in form %}
+
+
+                        <div class="form-group
+                            {% if field.errors %}
+                                has-error
+                            {% endif %}"
+                        >
+
+
+                            <!-- Label -->
+
+                            <label
+                                for="{{ field.id_for_label }}"
+                            >
+
+                                {{ field.label }}
+
+                                {% if field.field.required %}
+
+                                    <span class="required">
+                                        *
+                                    </span>
+
+                                {% endif %}
+
+                            </label>
+
+
+
+                            <!-- Help Text -->
+
+                            {% if field.help_text %}
+
+                                <small class="help-text">
+                                    {{ field.help_text }}
+                                </small>
+
+                            {% endif %}
+
+
+
+                            <!-- Field -->
+
+                            {{ field }}
+
+
+
+                            <!-- Errors -->
+
+                            {% if field.errors %}
+
+                                <div class="field-errors">
+
+                                    {% for error in field.errors %}
+
+                                        <span>
+                                            {{ error }}
+                                        </span>
+
+                                    {% endfor %}
+
+                                </div>
+
+                            {% endif %}
+
+                        </div>
+
+
+                    {% endfor %}
+
+                </div>
+
+
+
+                <!-- =========================================
+                     DATE INFORMATION
+                ========================================== -->
+
+                <div class="date-info-box">
+
+
+                    <div class="date-info-item">
+
+                        <span class="info-icon">
+                            📅
+                        </span>
+
+                        <div>
+
+                            <strong>
+                                Expiration Date
+                            </strong>
+
+                            <p>
+                                The date when the document becomes invalid.
+                            </p>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="date-info-item">
+
+                        <span class="info-icon">
+                            🔔
+                        </span>
+
+                        <div>
+
+                            <strong>
+                                Reminder Date
+                            </strong>
+
+                            <p>
+                                The date when the system should remind the owner.
+                            </p>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+
+                <!-- =========================================
+                     FORM ACTIONS
+                ========================================== -->
+
+                <div class="form-actions">
+
+
+                    <a
+                        href="{% url 'reminders:document_list' %}"
+                        class="btn btn-cancel"
+                    >
+
+                        Cancel
+
+                    </a>
+
+
+                    <button
+                        type="submit"
+                        class="btn btn-primary"
+                        id="saveButton"
+                    >
+
+                        <span>
+                            💾
+                        </span>
+
+                        Save Document
+
+                    </button>
+
+                </div>
+
+
+            </form>
+
+        </div>
+
+
+
+        <!-- =================================================
+             INFORMATION CARD
+        ================================================== -->
+
+        <div class="information-card">
+
+            <div class="information-icon">
+                💡
+            </div>
+
+
+            <div>
+
+                <h3>
+                    Document Reminder
+                </h3>
+
+                <p>
+                    Make sure the expiration date and reminder date
+                    are correct. The system will use these dates to
+                    determine when a document needs attention.
+                </p>
+
+            </div>
+
+        </div>
+
+
+    </main>
+
+</div>
+
+
+
+<!-- =====================================================
+     JAVASCRIPT
+====================================================== -->
+
+{% comment %} <script src="{% static 'js/document_register.js' %}"></script> {% endcomment %}
+
+
+</body>
+
+</html>
+{% endblock content %}

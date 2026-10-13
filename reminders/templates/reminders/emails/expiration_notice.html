@@ -1,0 +1,9 @@
+Hello {{ document.owner_name|default:"there" }},
+
+This is a reminder that the document "{{ document.title }}" is set to expire on {{ document.expiration_date }}.
+
+Days remaining: {{ document.days_until_expiration }}
+
+Please take any necessary action before the expiration date.
+
+— Document Expiration Reminder System

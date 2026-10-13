@@ -1,0 +1,559 @@
+{% load static %}
+
+{% block content %}
+
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Document Expiration Reminder</title>
+
+    <!-- CSS -->
+    <link rel="stylesheet" href="{% static 'css/documents_list.css' %}">
+
+</head>
+
+
+<body>
+
+<div class="app-container">
+
+
+    <!-- =========================
+         MOBILE MENU BUTTON
+    ========================== -->
+
+    <button class="mobile-menu-btn"
+            onclick="toggleSidebar()">
+
+        ☰
+
+    </button>
+
+
+    <!-- =========================
+         SIDEBAR
+    ========================== -->
+
+    <aside class="sidebar" id="sidebar">
+
+        <div class="logo">
+
+            <h2>📄 DocReminder</h2>
+
+            <p>
+                Document Expiration System
+            </p>
+
+        </div>
+
+
+        <div class="menu-title">
+            Main Menu
+        </div>
+
+
+        <nav class="menu">
+
+            <a href="#" class="active">
+
+                <span class="menu-icon">
+                    📋
+                </span>
+
+                Documents
+
+            </a>
+
+
+            <a href="#">
+
+                <span class="menu-icon">
+                    ⏰
+                </span>
+
+                Expiring Soon
+
+            </a>
+
+
+            <a href="#">
+
+                <span class="menu-icon">
+                    ⚠️
+                </span>
+
+                Expired
+
+            </a>
+
+
+            <a href="#">
+
+                <span class="menu-icon">
+                    🔔
+                </span>
+
+                Notifications
+
+            </a>
+
+        </nav>
+
+
+        <div class="menu-title">
+            Management
+        </div>
+
+
+        <nav class="menu">
+
+            <a href="{% url 'reminders:document_register' %}">
+
+                <span class="menu-icon">
+                    ➕
+                </span>
+
+                Register Document
+
+            </a>
+
+        </nav>
+
+    </aside>
+
+
+
+    <!-- =========================
+         MAIN CONTENT
+    ========================== -->
+
+    <main class="main-content">
+
+
+        <!-- HEADER -->
+
+        <div class="page-header">
+
+            <div>
+
+                <h1>
+                    Registered Documents
+                </h1>
+
+                <p>
+                    Manage documents and monitor their expiration dates.
+                </p>
+
+            </div>
+
+
+            <a
+                href="{% url 'reminders:document_register' %}"
+                class="btn btn-primary"
+            >
+
+                + Register New Document
+
+            </a>
+
+        </div>
+
+
+
+        <!-- =========================
+             STATISTICS
+        ========================== -->
+
+        <div class="stats-grid">
+
+
+            <!-- Total -->
+
+            <div class="stat-card">
+
+                <div class="stat-title">
+                    Total Documents
+                </div>
+
+                <div class="stat-number"
+                     id="totalDocuments">
+
+                    {{ documents|length }}
+
+                </div>
+
+            </div>
+
+
+            <!-- Valid -->
+
+            <div class="stat-card success">
+
+                <div class="stat-title">
+                    Valid Documents
+                </div>
+
+                <div class="stat-number"
+                     id="validDocuments">
+
+                    0
+
+                </div>
+
+            </div>
+
+
+            <!-- Expiring Soon -->
+
+            <div class="stat-card warning">
+
+                <div class="stat-title">
+                    Expiring Soon
+                </div>
+
+                <div class="stat-number"
+                     id="expiringDocuments">
+
+                    0
+
+                </div>
+
+            </div>
+
+
+            <!-- Expired -->
+
+            <div class="stat-card danger">
+
+                <div class="stat-title">
+                    Expired Documents
+                </div>
+
+                <div class="stat-number"
+                     id="expiredDocuments">
+
+                    0
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+
+        <!-- =========================
+             SEARCH & FILTER
+        ========================== -->
+
+        <div class="toolbar">
+
+
+            <!-- Search -->
+
+            <div class="search-box">
+
+                <span class="search-icon">
+                    🔍
+                </span>
+
+                <input
+                    type="text"
+                    id="searchInput"
+                    placeholder="Search document title or email..."
+                >
+
+            </div>
+
+
+            <!-- Status Filter -->
+
+            <select
+                id="statusFilter"
+                class="filter-select"
+            >
+
+                <option value="all">
+                    All Documents
+                </option>
+
+                <option value="valid">
+                    Valid
+                </option>
+
+                <option value="warning">
+                    Expiring Soon
+                </option>
+
+                <option value="expired">
+                    Expired
+                </option>
+
+            </select>
+
+        </div>
+
+
+
+        <!-- =========================
+             DOCUMENT TABLE
+        ========================== -->
+
+        <div class="table-card">
+
+
+            <div class="table-header">
+
+                <h2>
+                    Document List
+                </h2>
+
+            </div>
+
+
+            <div class="table-wrapper">
+
+                <table id="documentsTable">
+
+
+                    <!-- TABLE HEADER -->
+
+                    <thead>
+
+                        <tr>
+
+                            <th>
+                                Title
+                            </th>
+
+                            <th>
+                                Owner Email
+                            </th>
+
+                            <th>
+                                Expiration Date
+                            </th>
+
+                            <th>
+                                Reminder Date
+                            </th>
+
+                            <th>
+                                Days Remaining
+                            </th>
+
+                            <th>
+                                Status
+                            </th>
+
+                            <th>
+                                Notified
+                            </th>
+                            
+                            <th>
+                                Action
+                            </th>
+
+                        </tr>
+
+                    </thead>
+
+
+                    <!-- TABLE BODY -->
+
+                    <tbody>
+
+                        {% for document in documents %}
+
+                        <tr
+                            class="document-row"
+                            data-title="{{ document.title|lower }}"
+                            data-email="{{ document.owner_email|lower }}"
+                            data-expiration="{{ document.expiration_date|date:'Y-m-d' }}"
+                        >
+
+
+                            <!-- TITLE -->
+
+                            <td>
+
+                                <a
+                                    href="{% url 'reminders:document_detail' document.pk %}"
+                                    class="document-title"
+                                >
+
+                                    {{ document.title }}
+
+                                </a>
+
+                            </td>
+
+
+                            <!-- OWNER EMAIL -->
+
+                            <td>
+
+                                {{ document.owner_email }}
+
+                            </td>
+
+
+                            <!-- EXPIRATION DATE -->
+
+                            <td>
+
+                                {{ document.expiration_date }}
+
+                            </td>
+
+
+                            <!-- REMINDER DATE -->
+
+                            <td>
+
+                                {{ document.reminder_date }}
+
+                            </td>
+
+
+                            <!-- DAYS REMAINING -->
+
+                            <td class="days-remaining">
+
+                                Calculating...
+
+                            </td>
+
+
+                            <!-- STATUS -->
+
+                            <td class="document-status">
+
+                                <span class="status">
+
+                                    Calculating...
+
+                                </span>
+
+                            </td>
+
+
+                            <!-- NOTIFIED -->
+
+                            <td>
+
+                                {% if document.notified %}
+
+                                    <span class="notified-yes">
+
+                                        ✓ Yes
+
+                                    </span>
+
+                                {% else %}
+
+                                    <span class="notified-no">
+
+                                        ✗ No
+
+                                    </span>
+
+                                {% endif %}
+
+                            </td>
+                            <td class="action-cell">
+
+    <a
+        href="{% url 'reminders:document_detail' document.pk %}"
+        class="action-btn view-btn"
+    >
+        👁 View
+    </a>
+
+
+    <a
+        href="{% url 'reminders:document_edit' document.pk %}"
+        class="action-btn edit-btn"
+    >
+        ✏️ Edit
+    </a>
+
+
+    <a
+        href="{% url 'reminders:document_delete' document.pk %}"
+        class="action-btn delete-btn"
+    >
+        🗑 Delete
+    </a>
+
+</td>
+
+                        </tr>
+
+
+                        {% empty %}
+
+
+                        <!-- EMPTY STATE -->
+
+                        <tr>
+
+                            <td colspan="7">
+
+                                <div class="empty-state">
+
+                                    <div class="empty-icon">
+                                        📄
+                                    </div>
+
+                                    <h3>
+                                        No documents registered
+                                    </h3>
+
+                                    <p>
+                                        Start by registering your first document.
+                                    </p>
+
+                                </div>
+
+                            </td>
+
+                        </tr>
+
+
+                        {% endfor %}
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+
+    </main>
+
+</div>
+
+
+
+<!-- =========================
+     JAVASCRIPT
+========================== -->
+
+<script src="{% static 'js/documents_list.js' %}"></script>
+
+
+</body>
+
+</html>
+
+{% endblock content %}

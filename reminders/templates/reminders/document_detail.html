@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>{{ document.title }}</title>
+</head>
+<body>
+  <h1>{{ document.title }}</h1>
+  <p>Owner: {{ document.owner_name }} ({{ document.owner_email }})</p>
+  <p>Issued: {{ document.issue_date }}</p>
+  <p>Expires: {{ document.expiration_date }}</p>
+  <p>Reminder date: {{ document.reminder_date }}</p>
+  <p>Status: {% if document.is_expired %}Expired{% else %}Active{% endif %}</p>
+
+  <h2>Notification History</h2>
+  <ul>
+    {% for notification in document.notifications.all %}
+      <li>
+        {{ notification.sent_at }} —
+        {% if notification.success %}Sent OK{% else %}Failed: {{ notification.error_message }}{% endif %}
+      </li>
+    {% empty %}
+      <li>No notifications sent yet.</li>
+    {% endfor %}
+  </ul>
+
+  <a href="{% url 'reminders:document_list' %}">Back to list</a>
+</body>
+</html>

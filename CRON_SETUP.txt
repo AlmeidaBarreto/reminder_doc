@@ -1,0 +1,10 @@
+To run the daily check without Celery, add a cron job that calls the
+management command once a day. Edit your crontab with `crontab -e`
+and add a line like:
+
+0 8 * * * cd /path/to/doc_reminder && /path/to/venv/bin/python manage.py check_expiring_documents >> /path/to/doc_reminder/cron.log 2>&1
+
+This runs the check every day at 8:00 AM. You can also run it manually
+at any time to test it:
+
+python manage.py check_expiring_documents
